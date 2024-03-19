@@ -45,7 +45,7 @@ def clone_repository(username, password, repo_url, path):
         st.session_state.next_page = "Select Software"
         st.experimental_rerun()
     except Exception as e:
-        st.error("Error occurred: {e}")
+        st.error(f"Error occurred: {e}")
 
 # Define the pages
 def welcome_page():

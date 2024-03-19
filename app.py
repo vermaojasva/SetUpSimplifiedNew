@@ -1,24 +1,41 @@
 import streamlit as st
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import os
 from git import Repo
 
 # List of accesses
 access_list = ['JIRA', 'Bitbucket', 'AWS']
 
-def send_email(selected_accesses):
-    # Set up your email server
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login("your-email@gmail.com", "your-password")
+def send_email(selected_accesses, name, empId):
+    try:
+        # setup the parameters of the message
+        password = "lbmm hnet ztxj lcqg"
+        msg = MIMEMultipart()
+        msg['From'] = "dummy@gmail.com"
+        msg['To'] = "dummy@gmail.com"
+        msg['Subject'] = "Access request"
+        message = "Hi team, \nRequesting you to provide the following accesses for :\nName: {}\nEmployee Id: {}".format(name, empId) +"\n" + "\n".join(selected_accesses)
+        msg.attach(MIMEText(message, 'plain'))
 
-    # Compose the email
-    msg = "User has selected the following accesses:\n\n" + "\n".join(selected_accesses)
-    # server.sendmail("your-email@gmail.com", "recipient-email@gmail.com", msg)
-    server.quit()
+        # Set up your email server
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.starttls()
+        server.login(msg['From'], password)
+
+        # Send the email
+        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        print("Email sent successfully")
+
+    except Exception as e:
+        print("Failed to send email")
+        print(e)
+    finally:
+        server.quit()
 
 # Function to clone the repository
-def clone_repository(username, password, repo_url, path):
+def clone_repository(username, password, repo_url, path): 
     try:
         final_repo_url = repo_url.split("https://github.com/", 1)[1]
         remote = f"https://{username}:{password}@github.com/{final_repo_url}"
@@ -28,7 +45,7 @@ def clone_repository(username, password, repo_url, path):
         st.session_state.next_page = "Select Software"
         st.experimental_rerun()
     except Exception as e:
-        st.error(f"Error occurred: {e}")
+        st.error("Error occurred: {e}")
 
 # Define the pages
 def welcome_page():
@@ -44,12 +61,14 @@ def welcome_page():
 
 def access_page():
     st.title('Access Page')
+    name = st.text_input('Please provide your name')
+    empId = st.text_input('Please provide your emaployee id')
     selected_accesses = []
     for access in access_list:
         if st.checkbox(access):
             selected_accesses.append(access)
     if st.button('Submit'):
-        send_email(selected_accesses)
+        send_email(selected_accesses, name, empId)
         st.write('Email has been sent!')
 
 def clone_repository_page():

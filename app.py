@@ -145,7 +145,7 @@ def select_software_page():
     if install.button("Install"):
         selected_software_list = [software_list[software] for software, selected in selected_software.items() if selected]
         execute_power_script(selected_software_list)
-        st.success("Selected software: {}".format(selected_software_list))
+        st.success("Installing the following softwares: {}".format(selected_software_list))
 
 def repo_and_software_page():
     # Initialize session state variable

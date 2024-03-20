@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 import os
 from git import Repo
 import ctypes
+import time
 
 # List of accesses
 access_list = ['JIRA', 'Bitbucket', 'AWS']
@@ -57,7 +58,8 @@ def clone_repository(username, password, repo_url, path):
         final_repo_url = repo_url.split("https://github.com/", 1)[1]
         remote = f"https://{username}:{password}@github.com/{final_repo_url}"
         Repo.clone_from(remote, path)
-        st.success("Repository cloned successfully!")
+        st.success("Repository cloned successfully! Taking you to the software installation page.")
+        time.sleep(5);
         # Set session state variable to navigate to the next page
         st.session_state.next_page = "Select Software"
         st.experimental_rerun()

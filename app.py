@@ -39,12 +39,8 @@ def send_email(selected_accesses, name, empId):
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.starttls()
         server.login(msg['From'], password)
-
-        if not name or not empId: 
-            st.error("Please enter your name and employee ids")
-
-        # Send the email
         
+        # Send the email
         server.sendmail(msg['From'], msg['To'], msg.as_string())
         print("Email sent successfully")
 
@@ -91,16 +87,16 @@ def access_page():
     if st.button('Submit'):
         try:
             if (not name or not empId) and not selected_accesses :
-                st.write('Please enter your name, employee id and select needed accesses!')
+                st.error('Please enter your name, employee id and select needed accesses!')
             elif not name or not empId:
-                st.write('Please enter your name and employee id!')
+                st.error('Please enter your name and employee id!')
             elif not selected_accesses:
-                st.write('Please select needed accesses!')
+                st.error('Please select needed accesses!')
             else:
                 send_email(selected_accesses, name, empId)
-                st.write('Email has been sent!')
+                st.success('Email has been sent!')
         except Exception as e :
-            st.write('Error sending email!')
+            st.error('Error sending email!')
 
 def clone_repository_page():
     st.title("GitHub Repository Cloner")

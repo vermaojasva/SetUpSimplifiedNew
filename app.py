@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 import os
 from git import Repo
 import ctypes
+import time
 
 # List of accesses
 access_list = ['JIRA', 'Bitbucket', 'AWS']
@@ -39,7 +40,7 @@ def send_email(selected_accesses, name, empId):
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.starttls()
         server.login(msg['From'], password)
-
+        
         # Send the email
         server.sendmail(msg['From'], msg['To'], msg.as_string())
         print("Email sent successfully")
@@ -47,6 +48,7 @@ def send_email(selected_accesses, name, empId):
     except Exception as e:
         print("Failed to send email")
         print(e)
+        raise e
     finally:
         server.quit()
 
@@ -56,7 +58,8 @@ def clone_repository(username, password, repo_url, path):
         final_repo_url = repo_url.split("https://github.com/", 1)[1]
         remote = f"https://{username}:{password}@github.com/{final_repo_url}"
         Repo.clone_from(remote, path)
-        st.success("Repository cloned successfully!")
+        st.success("Repository cloned successfully! Taking you to the software installation page.")
+        time.sleep(5);
         # Set session state variable to navigate to the next page
         st.session_state.next_page = "Select Software"
         st.experimental_rerun()
@@ -71,21 +74,31 @@ def welcome_page():
     for access in access_list:
         st.write(access)
     if st.button('No'):
-        st.write('Please visit the Access Page, using the left navigation pane to request these')
+        st.success('Please visit the Access Page, using the left navigation pane to request these')
         return False
     return True
 
 def access_page():
     st.title('Access Page')
     name = st.text_input('Please provide your name')
-    empId = st.text_input('Please provide your emaployee id')
+    empId = st.text_input('Please provide your employee id')
     selected_accesses = []
     for access in access_list:
         if st.checkbox(access):
             selected_accesses.append(access)
     if st.button('Submit'):
-        send_email(selected_accesses, name, empId)
-        st.write('Email has been sent!')
+        try:
+            if (not name or not empId) and not selected_accesses :
+                st.error('Please enter your name, employee id and select needed accesses!')
+            elif not name or not empId:
+                st.error('Please enter your name and employee id!')
+            elif not selected_accesses:
+                st.error('Please select needed accesses!')
+            else:
+                send_email(selected_accesses, name, empId)
+                st.success('Email has been sent!')
+        except Exception as e :
+            st.error('Error sending email!')
 
 def clone_repository_page():
     st.title("GitHub Repository Cloner")
@@ -161,7 +174,7 @@ def main():
     if page():
         st.sidebar.success('You have all the accesses?')
     else:
-        st.sidebar.text('Go to Access Request Page')
+        st.sidebar.text('')
 
     
 

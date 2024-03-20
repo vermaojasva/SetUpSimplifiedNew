@@ -27,7 +27,7 @@ def execute_power_script(selected_software_list):
 def send_email(selected_accesses, name, empId):
     try:
         # setup the parameters of the message
-        password = "lbmm hnet ztxj lcqg"
+        password = ""
         msg = MIMEMultipart()
         msg['From'] = "dummy@gmail.com"
         msg['To'] = "dummy@gmail.com"

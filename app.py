@@ -72,7 +72,7 @@ def welcome_page():
     for access in access_list:
         st.write(access)
     if st.button('No'):
-        st.write('Please visit the Access Page, using the left navigation pane to request these')
+        st.success('Please visit the Access Page, using the left navigation pane to request these')
         return False
     return True
 

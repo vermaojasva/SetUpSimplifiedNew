@@ -4,9 +4,25 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
 from git import Repo
+import ctypes
 
 # List of accesses
 access_list = ['JIRA', 'Bitbucket', 'AWS']
+script_path = r"C:\Users\pururaj.rajawat\Desktop\hackathon\SetUpSimplifiedNew\script.ps1"
+
+def execute_power_script(selected_software_list):
+    sofware_to_install = " ".join(selected_software_list)
+    print(sofware_to_install)
+    try:
+        #Construct the powershell command to execute the script
+        power_command = ["powershell.exe" ,"-File" , script_path , sofware_to_install]
+
+        #Run the powershell script as admin
+        ctypes.windll.shell32.ShellExecuteW(None , "runas" , "powershell.exe" , " ".join(power_command) , None , 1)
+        print("Powershell script executed successfully as admin")
+    except Exception as e:
+        print(f"Error executing Poweshell script as admin: {e}")
+
 
 def send_email(selected_accesses, name, empId):
     try:
@@ -99,10 +115,14 @@ def select_software_page():
     st.title("Software Installation")
     st.header("Software Checklist")
     # List of software with checkboxes
-    software_list = ["IntellIJ IDEA", "Notepad++"]
+    software_list = {
+        "Firefox" : "firefox",
+        "Safari": "safari",
+        "Google Chrome": "googlechrome"
+    }
     selected_software = {}
-    for software in software_list:
-        selected_software[software] = st.checkbox(software, value=True)
+    for key in software_list:
+        selected_software[key] = st.checkbox(key, value=True)
 
     cloneRep, install = st.columns(2)
     # Button to submit selected software
@@ -110,7 +130,8 @@ def select_software_page():
         st.session_state.next_page = "Clone Repository"
         st.experimental_rerun()
     if install.button("Install"):
-        selected_software_list = [software for software, selected in selected_software.items() if selected]
+        selected_software_list = [software_list[software] for software, selected in selected_software.items() if selected]
+        execute_power_script(selected_software_list)
         st.success("Selected software: {}".format(selected_software_list))
 
 def repo_and_software_page():

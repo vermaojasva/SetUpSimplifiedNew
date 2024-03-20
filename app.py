@@ -40,13 +40,18 @@ def send_email(selected_accesses, name, empId):
         server.starttls()
         server.login(msg['From'], password)
 
+        if not name or not empId: 
+            st.error("Please enter your name and employee ids")
+
         # Send the email
+        
         server.sendmail(msg['From'], msg['To'], msg.as_string())
         print("Email sent successfully")
 
     except Exception as e:
         print("Failed to send email")
         print(e)
+        raise e
     finally:
         server.quit()
 
@@ -78,14 +83,24 @@ def welcome_page():
 def access_page():
     st.title('Access Page')
     name = st.text_input('Please provide your name')
-    empId = st.text_input('Please provide your emaployee id')
+    empId = st.text_input('Please provide your employee id')
     selected_accesses = []
     for access in access_list:
         if st.checkbox(access):
             selected_accesses.append(access)
     if st.button('Submit'):
-        send_email(selected_accesses, name, empId)
-        st.write('Email has been sent!')
+        try:
+            if (not name or not empId) and not selected_accesses :
+                st.write('Please enter your name, employee id and select needed accesses!')
+            elif not name or not empId:
+                st.write('Please enter your name and employee id!')
+            elif not selected_accesses:
+                st.write('Please select needed accesses!')
+            else:
+                send_email(selected_accesses, name, empId)
+                st.write('Email has been sent!')
+        except Exception as e :
+            st.write('Error sending email!')
 
 def clone_repository_page():
     st.title("GitHub Repository Cloner")
@@ -161,7 +176,7 @@ def main():
     if page():
         st.sidebar.success('You have all the accesses?')
     else:
-        st.sidebar.text('Go to Access Request Page')
+        st.sidebar.text('')
 
     
 

@@ -8,7 +8,7 @@ import ctypes
 
 # List of accesses
 access_list = ['JIRA', 'Bitbucket', 'AWS']
-script_path = r"C:\Users\pururaj.rajawat\Desktop\hackathon\SetUpSimplifiedNew\script.ps1"
+script_path = os.path.abspath("script.ps1")
 
 def execute_power_script(selected_software_list):
     sofware_to_install = " ".join(selected_software_list)
